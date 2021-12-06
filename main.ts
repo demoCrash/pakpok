@@ -986,7 +986,6 @@ class blok {
                     if ((ob.flag & this.pushmask) > 0 && (ob instanceof blok )) {
                         moved2 = ob.movey(shdmove)
                         if (v < 0 && v < ob.vy && ob.mom != this) {
-                            //console.log("add kid1")
                             this.addkid(ob)
                         }
                         if (Math.abs(moved2) < Math.abs(shdmove)) {
@@ -1005,7 +1004,6 @@ class blok {
                             this.delmom()
                         }
                         if (ob instanceof  blok) {
-                            //console.log("add kid2")
                             ob.addkid(this)
                         } else {
                             this.mom = ob
@@ -1030,8 +1028,6 @@ class blok {
         if (v > 0.1 && this.kids.length > 0) {
             for (let b2 of this.kids) {
                 if (b2.active) {
-                    //console.log(b2.sp)
-                   // console.log("call:"+frames)
                     b2.movey(v)
                 }
             }
@@ -1336,6 +1332,7 @@ class player extends blok {
                     }, 30)
                 }
             }
+            return
         }
 
         this.trapchk()
@@ -1483,7 +1480,6 @@ class player extends blok {
     draw(sp?: number, offx?: number, offy?: number | boolean) {
         if (this.exit) {
             super.draw(1 + ((Math.idiv(frames , 2)) % 2), -4, -4)
-            //console.log(this.exit)
             let x5 = this.exit.x
             let y5 = this.exit.y
             spr(30, x5, y5)
