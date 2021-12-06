@@ -736,7 +736,7 @@ game.onShade(function () {
     if (levelnum) {
         let displayLevel = level + 1
         let lvls = levels.length - 2
-        let s = (displayLevel < 10 ? "0" + displayLevel : "" + level) + "/" + (lvls < 10 ? "0" + lvls : "" + lvls)
+        let s = (displayLevel < 10 ? "0" + displayLevel : "" + displayLevel) + "/" + (lvls < 10 ? "0" + lvls : "" + lvls)
         mapPrint(s, levelnum.x + 2, levelnum.y + 2, 1)
         mapPrint(s, levelnum.x + 1, levelnum.y + 1, 4)
     }
