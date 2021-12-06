@@ -298,10 +298,12 @@ function mget (c: number, r: number) {
 }
 function shake (x: number, y: number) {
     if (Math.abs(x) > Math.abs(shkx)) {
-        shkx, shkxt = x, shkdelay + 1
+        shkx = x
+        shkxt = shkdelay + 1
     }
     if (Math.abs(y) > Math.abs(shky)) {
-        shky, shkyt = y, shkdelay + 1
+        shky =  y 
+        shkyt = shkdelay + 1
     }
 }
 let i = 0
@@ -371,9 +373,42 @@ level = 0
 let shkdelay = 2
 let shkxt = 2
 let shkyt = 2
+let exitMelody = new music.Melody('E2-600 G#2 B2 C#4 B3 A3 C#4 R a3 R e4')
+let flrMelody = new music.Melody('D#2-800 C#2 E2 G#2 B2 C#4 F4')
+let pushMelody = new music.Melody('C#3-800  F2')
+let melody_01 = new music.Melody('~16 E4-800')
+let deadMelody = new music.Melody('G3-3000 E3 C3 G#2 A2 D#1 D2 C# F1 A F# E R C#')
+let melody_fly = new music.Melody('~5 C-1300 R')//not smooth
+let melody_07 = new music.Melody('~1 a1-1000 a0')
+let melody_08 = new music.Melody('~1 E3-1000 R B2 R G#3')
+let melody_11 = new music.Melody('~1 A#2-3000 R A#1 R C#2 R F2 R C2')
+let melody_12 = new music.Melody("~1 C2-3000 R F#1 R F1")
 function sfx(n: number, channel?: number, offset?: number, length?: number)
 {
-
+    if (n == -1) {
+        melody_fly.stop()
+        //music.stopAllSounds()
+    } else if (n == 0) {
+        pushMelody.play()
+    } else if (n == 1) {
+        melody_01.play()
+    } else if (n == 3) {
+        //melody_fly.loop()
+    } else if (n == 4) {
+        flrMelody.play()
+    } else if (n == 5) {
+        deadMelody.play()
+    } else if (n == 6) {
+        exitMelody.play()
+    } else if (n == 7) {
+        melody_07.play()
+    } else if (n == 8) {
+        melody_08.play()
+    } else if (n == 11) {
+        melody_11.play()
+    } else if (n == 12) {
+        melody_12.play()
+    }
 }
 
 function spr(n: number, x: number, y: number, w?: number, h?: number, flip_x?: boolean, flip_y?:boolean)
@@ -504,7 +539,23 @@ function spr(n: number, x: number, y: number, w?: number, h?: number, flip_x?: b
     } else if (n == 81) {
         mapdrawImage(assets.image`myImage76`, x, y, flip_x, flip_y)
     } else if (n == 98) {
-        mapdrawImage(assets.image`myImage87`, x, y, flip_x, flip_y)
+        if(h == 1) {
+            mapdrawImage(assets.image`myImage0`, x, y, flip_x, flip_y)
+        } else if (h == 2) {
+            mapdrawImage(assets.image`myImage77`, x, y, flip_x, flip_y)
+        } else if (h == 3) {
+            mapdrawImage(assets.image`myImage78`, x, y, flip_x, flip_y)
+        } else if (h == 4) {
+            mapdrawImage(assets.image`myImage106`, x, y, flip_x, flip_y)
+        } else if (h == 5) {
+            mapdrawImage(assets.image`myImage107`, x, y, flip_x, flip_y)
+        } else if (h == 6) {
+            mapdrawImage(assets.image`myImage108`, x, y, flip_x, flip_y)
+        } else if (h == 7) {
+            mapdrawImage(assets.image`myImage109`, x, y, flip_x, flip_y)
+        } else {
+            mapdrawImage(assets.image`myImage87`, x, y, flip_x, flip_y)
+        }
     } else if (n == 84) {
         mapdrawImage(assets.image`myImage79`, x, y, flip_x, flip_y)
     } else if (n == 85) {
@@ -897,7 +948,6 @@ class blok {
                 }
             }
         }
-
         return v
     }
 
@@ -936,11 +986,12 @@ class blok {
                     if ((ob.flag & this.pushmask) > 0 && (ob instanceof blok )) {
                         moved2 = ob.movey(shdmove)
                         if (v < 0 && v < ob.vy && ob.mom != this) {
+                            //console.log("add kid1")
                             this.addkid(ob)
                         }
                         if (Math.abs(moved2) < Math.abs(shdmove)) {
                             if (crush2) {
-                                ob.death(this)
+                                ob.death()
                             } else {
                                 v -= (shdmove - moved2)
                             }
@@ -954,6 +1005,7 @@ class blok {
                             this.delmom()
                         }
                         if (ob instanceof  blok) {
+                            //console.log("add kid2")
                             ob.addkid(this)
                         } else {
                             this.mom = ob
@@ -975,9 +1027,11 @@ class blok {
             }
         }
 
-        if (v > 0 && this.kids.length > 0) {
+        if (v > 0.1 && this.kids.length > 0) {
             for (let b2 of this.kids) {
                 if (b2.active) {
+                    //console.log(b2.sp)
+                   // console.log("call:"+frames)
                     b2.movey(v)
                 }
             }
@@ -1375,12 +1429,12 @@ class player extends blok {
             [x, y] = centertile(this.sc, this.sr)
         }
         x = Math.min(Math.max(x - 64, blokmap.x * 8), -screen.height + (blokmap.x + blokmap.w) * 8)
-        y = Math.min(Math.max(y - 64, blokmap.y * 8), -screen.height + (blokmap.y + blokmap.h) * 8)
+        y = Math.min(Math.max(y - 60, blokmap.y * 8), -screen.height + (blokmap.y + blokmap.h) * 8)
         return [x, y]
     }
 
     death(src:blok) {
-        super.death(this)
+        super.death()
         if(src instanceof blok) {
             if (src.crushmask && (this.flag & src.crushmask) > 0) {
                 if (src.touchy == this) {
@@ -1428,7 +1482,7 @@ class player extends blok {
 
     draw(sp?: number, offx?: number, offy?: number | boolean) {
         if (this.exit) {
-            super.draw(1 + ((Math.floor(frames / 2)) % 2), -4, -4)
+            super.draw(1 + ((Math.idiv(frames , 2)) % 2), -4, -4)
             //console.log(this.exit)
             let x5 = this.exit.x
             let y5 = this.exit.y
@@ -1942,7 +1996,7 @@ class debris {
         this.vx *= dropdamp
         this.vy *= dropdamp
         this.vy += grav
-        if (this.y > cam_y + 128) {
+        if (this.y > cam_y + 120) {
             this.active = false
         }
     }
@@ -2086,7 +2140,7 @@ class splode {
     draw() {
         let t4 = Math.floor(this.t * 0.5)
         let x7 = this.x
-        let y7 = this.y //% 128
+        let y7 = this.y 
         let r5 = this.r
         let col2 = this.col
         let colw = this.colw
@@ -2155,7 +2209,7 @@ class chkpnt {
         let y8 = this.y
         let h3 = (this.r + 1) * 8 - this.y
         if (h3 > 8) {
-            spr(98, x8, y8 + 8, 1, (h3 - 8) / 8)
+            spr(98, x8, y8 + 8, 1, h3 - 8)
             h3 = 8
         }
         if (this.on) {
@@ -2165,9 +2219,7 @@ class chkpnt {
         }
     }
 }
-// game.onUpdate(function() {
- 
-// })
+
 game.onUpdateInterval(30, function () {
     
     let good: blok[] = []
@@ -2200,6 +2252,3 @@ game.onUpdateInterval(30, function () {
     frames += 1
 })
 
-// game.onUpdate(function () {
-    
-// })
